@@ -11,13 +11,21 @@ resource "azurerm_storage_account" "storage" {
 
   blob_properties {
     versioning_enabled = true
+
+    delete_retention_policy {
+      days = 7
+    }
+
+    container_delete_retention_policy {
+      days = 7
+    }
   }
 
   tags = var.tags
 }
 
 resource "azurerm_storage_container" "container" {
-  name                 = var.container_name
-  storage_account_name = var.storage_account_name
+  name                  = var.container_name
+  storage_account_id    = azurerm_storage_account.storage.id
   container_access_type = "private"
 }
