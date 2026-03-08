@@ -1,19 +1,31 @@
-variable "project" {
-  type = string
-}
-
-variable "environment" {
-  type = string
+variable "name" {
+  description = "Virtual Network name"
+  type        = string
 }
 
 variable "location" {
-  type = string
+  description = "Azure region"
+  type        = string
 }
 
 variable "resource_group_name" {
-  type = string
+  description = "Resource Group name"
+  type        = string
 }
 
 variable "address_space" {
-  type = list(string)
+  description = "VNet address space"
+  type        = list(string)
+}
+
+variable "dns_servers" {
+  description = "Custom DNS servers"
+  type        = list(string)
+  default     = []
+}
+
+variable "tags" {
+  description = "Tags for resources"
+  type        = map(string)
+  default     = {}
 }
