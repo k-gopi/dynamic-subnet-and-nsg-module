@@ -52,17 +52,26 @@ subnets = {
 
 #############################################
 # Monitoring Resources
-#############################################
+#########################################
 
 log_analytics_workspace_name = "uad-law"
-application_insights_name    = "uad-appinsights"
+log_analytics_sku             = "PerGB2018"
+log_analytics_retention_in_days = 30
+
+application_insights_name     = "uad-appinsights"
+application_type              = "web"
+appinsights_retention_in_days = 30
 
 #############################################
 # storage Resources
 #############################################
 
-storage_account_name = "uadstorage123"
-container_name       = "appdata"
+storage_account_name          = "uatstorage123"
+container_name                = "appdata"
+account_tier                  = "Standard"
+account_replication_type      = "LRS"
+delete_retention_days         = 7
+container_delete_retention_days = 7
 
 # -----------------------------
 # Common tags (ALL resources)

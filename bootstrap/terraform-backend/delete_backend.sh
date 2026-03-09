@@ -2,7 +2,7 @@
 set -e
 
 # Variables
-RESOURCE_GROUP="rapidrore-uat-tfstate-rg"
+RESOURCE_GROUP="fis-uat-tfstate-rg"
 
 echo "Deleting Terraform backend resource group..."
 

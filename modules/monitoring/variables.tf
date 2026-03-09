@@ -3,10 +3,31 @@ variable "log_analytics_workspace_name" {
   type        = string
 }
 
+variable "log_analytics_sku" {
+  description = "Log Analytics SKU"
+  type        = string
+}
+
+variable "log_analytics_retention_in_days" {
+  description = "Log Analytics retention days"
+  type        = number
+}
+
 variable "application_insights_name" {
   description = "Application Insights Name"
   type        = string
 }
+
+variable "application_type" {
+  description = "Application Insights application type"
+  type        = string
+}
+
+variable "appinsights_retention_in_days" {
+  description = "Application Insights retention days"
+  type        = number
+}
+
 
 variable "location" {
   description = "Azure Region"

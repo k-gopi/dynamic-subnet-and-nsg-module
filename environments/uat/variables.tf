@@ -3,43 +3,37 @@
 # -----------------------------
 
 variable "project" {
-  type = string
-  # RG name construct cheyyadaniki use avutundi
-  # Example: fis-uat-rg
+  type        = string
+  description = "RG name construct cheyyadaniki use avutundi, example: fis-uat-rg"
 }
 
 variable "environment" {
-  type = string
-  # Environment identify cheyyadaniki (dev / uat / prod)
-  # RG name lo kuda use avutundi
+  type        = string
+  description = "Environment identify cheyyadaniki (dev / uat / prod). RG name lo use avutundi"
 }
 
 variable "location" {
-  type = string
-  # RG and VNET create ayye Azure region
+  type        = string
+  description = "Azure region for RG, VNET, Storage, Monitoring etc."
 }
-
 
 # -----------------------------
 # VNET related variables
 # -----------------------------
 
 variable "vnet_name" {
-  type = string
-  # Virtual Network name
-  # Example: fis-uat-vnet
+  type        = string
+  description = "Virtual Network name, example: fis-uat-vnet"
 }
 
 variable "vnet_address_space" {
-  type = list(string)
-  # VNET CIDR range
-  # Example: 10.0.0.0/16
+  type        = list(string)
+  description = "VNET CIDR range, example: [10.0.0.0/16]"
 }
 
 variable "dns_servers" {
-  type = list(string)
-  # Custom DNS servers
-  # Empty list unte Azure default DNS use avutundi
+  type        = list(string)
+  description = "Custom DNS servers, empty list ante Azure default DNS use avutundi"
 }
 
 #subnets
@@ -51,22 +45,13 @@ variable "subnets" {
     address_prefix = string
   }))
 }
-#############################################
-# Monitoring Module Variables
-#############################################
 
-variable "log_analytics_workspace_name" {
-  description = "Log Analytics Workspace Name"
-  type        = string
-}
 
-variable "application_insights_name" {
-  description = "Application Insights Name"
-  type        = string
-}
-#############################################
-# storage Module Variables
-#############################################
+
+# -----------------------------
+# Storage Module Variables
+# -----------------------------
+
 variable "storage_account_name" {
   description = "Storage Account Name"
   type        = string
@@ -77,11 +62,59 @@ variable "container_name" {
   type        = string
 }
 
+variable "account_tier" {
+  description = "Storage Account Tier (Standard / Premium)"
+  type        = string
+}
+
+variable "account_replication_type" {
+  description = "Storage Account Replication Type (LRS / GRS / ZRS / RAGRS)"
+  type        = string
+}
+
+variable "delete_retention_days" {
+  description = "Blob delete retention policy in days"
+  type        = number
+}
+
+variable "container_delete_retention_days" {
+  description = "Container delete retention policy in days"
+  type        = number
+}
+# Log Analytics
+
+variable "log_analytics_workspace_name" {
+  type = string
+}
+
+variable "log_analytics_sku" {
+  type = string
+}
+
+variable "log_analytics_retention_in_days" {
+  type = number
+}
+
+# Application Insights
+
+variable "application_insights_name" {
+  type = string
+}
+
+variable "application_type" {
+  type = string
+}
+
+variable "appinsights_retention_in_days" {
+  type = number
+}
+
+
 # -----------------------------
 # Common tags (All resources)
 # -----------------------------
 
 variable "tags" {
-  type = map(string)
-  # RG, VNET and future resources ki common tags
+  description = "Common tags applied to RG, VNET, Storage, Monitoring, etc."
+  type        = map(string)
 }

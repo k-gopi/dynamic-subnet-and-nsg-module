@@ -2,8 +2,8 @@ resource "azurerm_storage_account" "storage" {
   name                     = var.storage_account_name
   resource_group_name      = var.resource_group_name
   location                 = var.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
+  account_tier             = var.account_tier
+  account_replication_type = var.account_replication_type
 
   min_tls_version                 = "TLS1_2"
   public_network_access_enabled   = true
@@ -13,11 +13,11 @@ resource "azurerm_storage_account" "storage" {
     versioning_enabled = true
 
     delete_retention_policy {
-      days = 7
+      days = var.delete_retention_days
     }
 
     container_delete_retention_policy {
-      days = 7
+      days = var.container_delete_retention_days
     }
   }
 
