@@ -1,6 +1,8 @@
-resource "azurerm_subnet_network_security_group_association" "this" {
-  for_each = var.nsg_subnet_map
+resource "azurerm_subnet_network_security_group_association" "attach" {
 
-  subnet_id                 = each.value.subnet_id
-  network_security_group_id = each.value.nsg_id
+  for_each = var.subnet_ids
+
+  subnet_id                 = each.value
+  network_security_group_id = var.nsg_ids[each.key]
+
 }

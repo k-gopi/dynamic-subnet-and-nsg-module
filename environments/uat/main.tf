@@ -12,26 +12,28 @@ module "rg" {
 # VNet
 # -----------------------------
 module "vnet" {
+
   source = "../../modules/vnet"
 
   name                = var.vnet_name
+  address_space       = var.vnet_address_space
   location            = var.location
-  resource_group_name = module.rg.rg_name
-
-  address_space = var.vnet_address_space
-  dns_servers   = var.dns_servers
-
-  tags = var.tags
+  resource_group_name = module.rg.resource_group_name
+  dns_servers         = var.dns_servers
+  tags                = var.tags
 }
-
 # -----------------------------
 # Subnets
 # -----------------------------
 module "subnets" {
-  source              = "../../modules/subnets"
-  resource_group_name = module.rg.rg_name
-  vnet_name           = module.vnet.vnet_name
+
+  source = "../../modules/subnets"
+
   subnets             = var.subnets
+  vnet_name           = module.vnet.vnet_name
+  resource_group_name = module.rg.resource_group_name
+
+  depends_on = [module.vnet]   # ⭐ IMPORTANT
 }
 
 # -----------------------------
@@ -49,7 +51,7 @@ module "monitoring" {
   appinsights_retention_in_days    = var.appinsights_retention_in_days
 
   location            = var.location
-  resource_group_name = module.rg.rg_name
+  resource_group_name = module.rg.resource_group_name
 
   tags = var.tags
 }
@@ -62,7 +64,7 @@ module "storage" {
 
   storage_account_name            = var.storage_account_name
   container_name                  = var.container_name
-  resource_group_name             = module.rg.rg_name
+  resource_group_name = module.rg.resource_group_name
   location                        = var.location
   account_tier                    = var.account_tier
   account_replication_type        = var.account_replication_type
@@ -77,7 +79,7 @@ module "storage" {
 # -----------------------------
 module "sql_server" {
   source              = "../../modules/sql_server"
-  resource_group_name = module.rg.rg_name
+  resource_group_name = module.rg.resource_group_name
   sql_server_name     = var.sql_server_name
   sql_admin_username  = var.sql_admin_username
   sql_admin_password  = var.sql_admin_password
@@ -93,30 +95,16 @@ module "sql_server" {
 # -----------------------------
 module "nsg" {
   source              = "../../modules/nsg"
-  resource_group_name = module.rg.rg_name
+  subnets             = var.subnets
   location            = var.location
-  nsgs                = var.nsgs
-  tags                = var.tags
+  resource_group_name = module.rg.resource_group_name
 }
 
 # -----------------------------
 # NSG Attachment
 # -----------------------------
-module "nsg_attach" {
-  source = "../../modules/nsg_attachment"
-
-  nsg_subnet_map = {
-    aks = {
-      nsg_id    = module.nsg.nsgs["aks"]
-      subnet_id = module.subnets.aks_subnet_id
-    }
-    appgw = {
-      nsg_id    = module.nsg.nsgs["appgw"]
-      subnet_id = module.subnets.appgw_subnet_id
-    }
-    private_endpoint = {
-      nsg_id    = module.nsg.nsgs["private_endpoint"]
-      subnet_id = module.subnets.private_endpoint_subnet_id
-    }
-  }
+module "nsg_attachment" {
+  source     = "../../modules/nsg_attachment"
+  subnet_ids = module.subnets.subnet_ids
+  nsg_ids    = module.nsg.nsg_ids
 }

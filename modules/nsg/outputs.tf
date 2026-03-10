@@ -1,7 +1,5 @@
-output "nsgs" {
+output "nsg_ids" {
   value = {
-    appgw            = azurerm_network_security_group.appgw.id
-    aks              = azurerm_network_security_group.aks.id
-    private_endpoint = azurerm_network_security_group.private_endpoint.id
+    for k, v in azurerm_network_security_group.nsg : k => v.id
   }
 }

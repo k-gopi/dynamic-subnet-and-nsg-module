@@ -36,16 +36,18 @@ variable "dns_servers" {
 # Subnets
 # -----------------------------
 variable "subnets" {
-  description = "Map of subnets for VNet"
+
+  description = "Subnets with CIDR"
+
   type = map(object({
-    name           = string
-    address_prefix = string
+    cidr = string
   }))
 }
 
 # -----------------------------
 # NSGs
 # -----------------------------
+/*
 variable "nsgs" {
   type = map(object({
     name     = string
@@ -63,7 +65,7 @@ variable "nsgs" {
     }))
   }))
 }
-
+*/
 # -----------------------------
 # Monitoring
 # -----------------------------
