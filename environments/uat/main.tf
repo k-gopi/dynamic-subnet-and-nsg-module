@@ -108,3 +108,29 @@ module "nsg_attachment" {
   subnet_ids = module.subnets.subnet_ids
   nsg_ids    = module.nsg.nsg_ids
 }
+
+# -----------------------------
+# Private Endpoints
+# -----------------------------
+module "private_endpoint" {
+  source              = "../../modules/private_endpoint"
+  private_endpoints   = var.private_endpoints
+  vnet_name           = module.vnet.vnet_name
+  subnets             = module.subnets.subnet_ids
+  sql_server_id       = module.sql_server.sql_server_id
+  sql_db_id           = module.sql_server.database_id
+  storage_account_id  = module.storage.storage_account_id
+  location            = var.location
+  resource_group_name = module.rg.resource_group_name
+}
+# -----------------------------
+# Private DNS Zones
+# -----------------------------
+module "private_dns" {
+  source              = "../../modules/private_dns"
+  project             = var.project
+  environment         = var.environment
+  resource_group_name = module.rg.resource_group_name
+  vnet_id             = module.vnet.vnet_id
+  tags                = var.tags
+}

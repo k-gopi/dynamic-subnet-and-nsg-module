@@ -36,36 +36,12 @@ variable "dns_servers" {
 # Subnets
 # -----------------------------
 variable "subnets" {
-
   description = "Subnets with CIDR"
-
   type = map(object({
     cidr = string
   }))
 }
 
-# -----------------------------
-# NSGs
-# -----------------------------
-/*
-variable "nsgs" {
-  type = map(object({
-    name     = string
-    location = string
-    security_rules = list(object({
-      name                       = string
-      priority                   = number
-      direction                  = string
-      access                     = string
-      protocol                   = string
-      source_port_range          = string
-      destination_port_range     = string
-      source_address_prefix      = string
-      destination_address_prefix = string
-    }))
-  }))
-}
-*/
 # -----------------------------
 # Monitoring
 # -----------------------------
@@ -149,4 +125,28 @@ variable "sku_name" {
 variable "sql_version" {
   type    = string
   default = "12.0"
+}
+
+# -----------------------------
+# Private Endpoints
+# -----------------------------
+variable "private_endpoints" {
+  description = "Private Endpoints for SQL / Storage / DB"
+  type = map(object({
+    name          = string
+    resource_type = string  # allowed values: "sql", "storage", "db"
+    subnet_name   = string
+  }))
+}
+# Optional: override default DNS zone names
+variable "sql_dns_zone_name" {
+  description = "Private DNS Zone name for SQL"
+  type        = string
+  default     = "privatelink.database.windows.net"
+}
+
+variable "storage_dns_zone_name" {
+  description = "Private DNS Zone name for Storage"
+  type        = string
+  default     = "privatelink.blob.core.windows.net"
 }
