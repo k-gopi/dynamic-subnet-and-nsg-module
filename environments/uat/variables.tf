@@ -1,157 +1,55 @@
 # -----------------------------
-# Resource Group related variables
+# Environment / RG variables
 # -----------------------------
-
 variable "project" {
-  type        = string
-  description = "RG name construct cheyyadaniki use avutundi, example: fis-uat-rg"
+  type = string
 }
 
 variable "environment" {
-  type        = string
-  description = "Environment identify cheyyadaniki (dev / uat / prod). RG name lo use avutundi"
+  type = string
 }
 
 variable "location" {
-  type        = string
-  description = "Azure region for RG, VNET, Storage, Monitoring etc."
+  type = string
+}
+
+variable "tags" {
+  type = map(string)
 }
 
 # -----------------------------
-# VNET related variables
+# VNet
 # -----------------------------
-
 variable "vnet_name" {
-  type        = string
-  description = "Virtual Network name, example: fis-uat-vnet"
+  type = string
 }
 
 variable "vnet_address_space" {
-  type        = list(string)
-  description = "VNET CIDR range, example: [10.0.0.0/16]"
+  type = list(string)
 }
 
 variable "dns_servers" {
-  type        = list(string)
-  description = "Custom DNS servers, empty list ante Azure default DNS use avutundi"
+  type = list(string)
 }
-
-#subnets
 
 # -----------------------------
 # Subnets
 # -----------------------------
 variable "subnets" {
-  description = "Subnets for the VNet"
+  description = "Map of subnets for VNet"
   type = map(object({
     name           = string
     address_prefix = string
   }))
 }
 
-
-
 # -----------------------------
-# Storage Module Variables
-# -----------------------------
-
-variable "storage_account_name" {
-  description = "Storage Account Name"
-  type        = string
-}
-
-variable "container_name" {
-  description = "Blob Container Name"
-  type        = string
-}
-
-variable "account_tier" {
-  description = "Storage Account Tier (Standard / Premium)"
-  type        = string
-}
-
-variable "account_replication_type" {
-  description = "Storage Account Replication Type (LRS / GRS / ZRS / RAGRS)"
-  type        = string
-}
-
-variable "delete_retention_days" {
-  description = "Blob delete retention policy in days"
-  type        = number
-}
-
-variable "container_delete_retention_days" {
-  description = "Container delete retention policy in days"
-  type        = number
-}
-# Log Analytics
-
-variable "log_analytics_workspace_name" {
-  type = string
-}
-
-variable "log_analytics_sku" {
-  type = string
-}
-
-variable "log_analytics_retention_in_days" {
-  type = number
-}
-
-# Application Insights
-
-variable "application_insights_name" {
-  type = string
-}
-
-variable "application_type" {
-  type = string
-}
-
-variable "appinsights_retention_in_days" {
-  type = number
-}
-
-
-# sql_server
-
-variable "sql_server_name" {
-  type        = string
-}
-
-variable "sql_admin_username" {
-  description = "SQL admin username (env var)"
-  type        = string
-  sensitive   = true
-}
-
-variable "sql_admin_password" {
-  description = "SQL admin password (env var)"
-  type        = string
-  sensitive   = true
-}
-
-variable "database_name" {
-  type = string
-}
-
-variable "sku_name" {
-  type    = string
-  default = "Basic"
-}
-variable "sql_version" {
-  description = "Azure SQL Server version"
-  type        = string
-  default     = "12.0"   # default version if nothing passed from tfvars
-}
-
-# -----------------------------
-# NSG variables
+# NSGs
 # -----------------------------
 variable "nsgs" {
   type = map(object({
-    name           = string
-    location       = string
+    name     = string
+    location = string
     security_rules = list(object({
       name                       = string
       priority                   = number
@@ -166,62 +64,87 @@ variable "nsgs" {
   }))
 }
 
+# -----------------------------
+# Monitoring
+# -----------------------------
+variable "log_analytics_workspace_name" {
+  type = string
+}
+
+variable "log_analytics_sku" {
+  type = string
+}
+
+variable "log_analytics_retention_in_days" {
+  type = number
+}
+
+variable "application_insights_name" {
+  type = string
+}
+
+variable "application_type" {
+  type = string
+}
+
+variable "appinsights_retention_in_days" {
+  type = number
+}
 
 # -----------------------------
-# NSG IDs attachement (from modules/nsg outputs)
+# Storage
 # -----------------------------
-variable "nsg_attachments" {
-  description = "Map of NSG names to subnet names for attachment"
-  type = map(string)
-  default = {}
+variable "storage_account_name" {
+  type = string
 }
 
-variable "appgw_nsg_id" {
-  type        = string
-  description = "App Gateway NSG ID"
+variable "container_name" {
+  type = string
 }
 
-variable "aks_nsg_id" {
-  type        = string
-  description = "AKS NSG ID"
+variable "account_tier" {
+  type = string
 }
 
-variable "private_endpoint_nsg_id" {
-  type        = string
-  description = "Private Endpoint NSG ID"
+variable "account_replication_type" {
+  type = string
+}
+
+variable "delete_retention_days" {
+  type = number
+}
+
+variable "container_delete_retention_days" {
+  type = number
 }
 
 # -----------------------------
-# Subnet IDs (from modules/subnets outputs)
+# SQL
 # -----------------------------
-variable "appgw_subnet_id" {
-  type        = string
-  description = "App Gateway Subnet ID"
+variable "sql_server_name" {
+  type = string
 }
 
-variable "aks_subnet_id" {
-  type        = string
-  description = "AKS Subnet ID"
+variable "sql_admin_username" {
+  type      = string
+  sensitive = true
 }
 
-variable "private_endpoint_subnet_id" {
-  type        = string
-  description = "Private Endpoint Subnet ID"
+variable "sql_admin_password" {
+  type      = string
+  sensitive = true
 }
-# -----------------------------
-# Common tags (All resources)
-# -----------------------------
 
-variable "tags" {
-  description = "Common tags applied to RG, VNET, Storage, Monitoring, etc."
-  type        = map(string)
+variable "database_name" {
+  type = string
 }
-/*
-variable "subnets" {
-  description = "Map of subnets to create"
-  type = map(object({
-    name           = string
-    address_prefix = string
-  }))
+
+variable "sku_name" {
+  type    = string
+  default = "Basic"
 }
-*/
+
+variable "sql_version" {
+  type    = string
+  default = "12.0"
+}
