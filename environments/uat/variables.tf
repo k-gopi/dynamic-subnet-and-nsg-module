@@ -16,6 +16,10 @@ variable "location" {
 variable "tags" {
   type = map(string)
 }
+variable "custom_rg_name" {
+  type        = string
+  description = "Custom name for the resource group"
+}
 
 # -----------------------------
 # VNet
@@ -40,6 +44,27 @@ variable "subnets" {
   type = map(object({
     cidr = string
   }))
+}
+
+# -----------------------------
+# NSG
+# -----------------------------
+variable "nsg_rules" {
+  description = "NSG rules for each subnet"
+
+  type = map(list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_range     = string
+    source_address_prefix      = string
+    destination_address_prefix = string
+  })))
+
+  default = {}
 }
 
 # -----------------------------
@@ -131,14 +156,14 @@ variable "sql_version" {
 # Private Endpoints
 # -----------------------------
 variable "private_endpoints" {
-  description = "Private Endpoints for SQL / Storage / DB"
+  description = "Private Endpoints for SQL / Storage"
   type = map(object({
     name          = string
-    resource_type = string  # allowed values: "sql", "storage", "db"
+    resource_type = string
     subnet_name   = string
   }))
 }
-# Optional: override default DNS zone names
+
 variable "sql_dns_zone_name" {
   description = "Private DNS Zone name for SQL"
   type        = string
@@ -149,4 +174,84 @@ variable "storage_dns_zone_name" {
   description = "Private DNS Zone name for Storage"
   type        = string
   default     = "privatelink.blob.core.windows.net"
+}
+
+# -----------------------------
+# AKS + Application Gateway
+# -----------------------------
+variable "appgw_name" {
+  type = string
+}
+# Optional Application Gateway ID for NSG dependency
+variable "appgw_id" {
+  type        = string
+  default     = null
+  description = "Application Gateway ID to ensure NSG destroys after AGW (prevents V2 SKU delete errors)"
+}
+variable "appgw_sku_name" {
+  type = string
+}
+
+variable "appgw_sku_tier" {
+  type = string
+}
+
+variable "appgw_capacity" {
+  type = number
+}
+
+variable "appgw_frontend_port" {
+  type = number
+}
+
+variable "appgw_private_ip" {
+  type = string
+}
+
+variable "aks_cluster_name" {
+  type = string
+}
+
+variable "dns_prefix" {
+  type = string
+}
+
+variable "system_nodepool_name" {
+  type = string
+}
+
+variable "system_nodepool_vm_size" {
+  type = string
+}
+
+variable "system_nodepool_min" {
+  type = number
+}
+
+variable "system_nodepool_max" {
+  type = number
+}
+
+variable "user_nodepool_name" {
+  type = string
+}
+
+variable "user_nodepool_vm_size" {
+  type = string
+}
+
+variable "user_nodepool_min" {
+  type = number
+}
+
+variable "user_nodepool_max" {
+  type = number
+}
+
+variable "service_cidr" {
+  type = string
+}
+
+variable "dns_service_ip" {
+  type = string
 }
