@@ -1,6 +1,8 @@
 ################################################
-# NSG
+# modules/nsg/main.tf
 ################################################
+
+# NSG Creation
 resource "azurerm_network_security_group" "nsg" {
   for_each = var.subnets
 
@@ -13,9 +15,7 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-################################################
 # Dynamic NSG Rules
-################################################
 locals {
   rules = flatten([
     for subnet_name, rules_list in var.nsg_rules : [
@@ -25,7 +25,7 @@ locals {
 }
 
 resource "azurerm_network_security_rule" "rules" {
-  for_each = { for r in local.rules : "${r.subnet}-${r.name}" => r }
+  for_each = { for r in local.rules : "${r.subnet}-${r.name}" => r if contains(keys(azurerm_network_security_group.nsg), r.subnet) }
 
   name                       = each.value.name
   priority                   = each.value.priority
@@ -47,6 +47,6 @@ resource "azurerm_network_security_rule" "rules" {
   }
 
   lifecycle {
-    ignore_changes = all # 🔹 Prevent App Gateway V2 inbound rule deletion errors
+    ignore_changes = all
   }
 }

@@ -1,27 +1,7 @@
-#################################
-# Public IP for Application Gateway
-#################################
-
-resource "azurerm_public_ip" "appgw_pubip" {
-  name                = "${var.appgw_name}-pubip"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  tags                = var.tags
-}
-
-#################################
-# Application Gateway
-#################################
-
 resource "azurerm_application_gateway" "appgw" {
   name                = var.appgw_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  timeouts {
-    delete = "10m"
-  }
 
   sku {
     name     = var.appgw_sku_name
@@ -31,15 +11,17 @@ resource "azurerm_application_gateway" "appgw" {
 
   gateway_ip_configuration {
     name      = "appgw-ip-config"
-    subnet_id = var.appgw_subnet_id
+    subnet_id = var.appgw_subnet_id  # Private subnet
   }
 
   #################################
-  # Public Frontend
+  # Private Frontend (internal)
   #################################
   frontend_ip_configuration {
-    name                 = "public-frontend"
-    public_ip_address_id = azurerm_public_ip.appgw_pubip.id
+    name                         = "private-frontend"
+    subnet_id                    = var.appgw_subnet_id
+    private_ip_address_allocation = "Static"  # or "Static" if you want fixed IP
+    private_ip_address            = var.appgw_private_ip  # ✅ must provide IP
   }
 
   frontend_port {
@@ -60,7 +42,7 @@ resource "azurerm_application_gateway" "appgw" {
 
   http_listener {
     name                           = "dummy-listener"
-    frontend_ip_configuration_name = "public-frontend"
+    frontend_ip_configuration_name = "private-frontend"
     frontend_port_name             = "http"
     protocol                       = "Http"
   }
@@ -76,7 +58,6 @@ resource "azurerm_application_gateway" "appgw" {
 
   tags = var.tags
 }
-
 #################################
 # AKS Cluster
 #################################
