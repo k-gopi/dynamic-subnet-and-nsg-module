@@ -157,21 +157,44 @@ module "aks_module" {
   appgw_frontend_port = var.appgw_frontend_port
   appgw_private_ip    = var.appgw_private_ip
 
-  aks_cluster_name        = var.aks_cluster_name
-  dns_prefix              = var.dns_prefix
+  aks_cluster_name             = var.aks_cluster_name
+  dns_prefix                   = var.dns_prefix
 
-  system_nodepool_name    = var.system_nodepool_name
-  system_nodepool_vm_size = var.system_nodepool_vm_size
-  system_nodepool_min     = var.system_nodepool_min
-  system_nodepool_max     = var.system_nodepool_max
+  system_nodepool_name         = var.system_nodepool_name
+  system_nodepool_vm_size      = var.system_nodepool_vm_size
+  system_nodepool_min          = var.system_nodepool_min
+  system_nodepool_max          = var.system_nodepool_max
+  system_nodepool_os_disk_size_gb = var.system_nodepool_os_disk_size_gb
 
-  user_nodepool_name      = var.user_nodepool_name
-  user_nodepool_vm_size   = var.user_nodepool_vm_size
-  user_nodepool_min       = var.user_nodepool_min
-  user_nodepool_max       = var.user_nodepool_max
+  user_nodepool_name           = var.user_nodepool_name
+  user_nodepool_vm_size        = var.user_nodepool_vm_size
+  user_nodepool_min            = var.user_nodepool_min
+  user_nodepool_max            = var.user_nodepool_max
+  user_nodepool_os_disk_size_gb = var.user_nodepool_os_disk_size_gb
 
   service_cidr   = var.service_cidr
   dns_service_ip = var.dns_service_ip
 
   tags = var.tags
+  depends_on = [
+    module.route_table
+  ]
+}
+
+################################################
+# routetable
+################################################
+
+module "route_table" {
+  source = "../../modules/route_table"
+
+  route_table_name    = var.route_table_name
+  route_name          = var.route_name
+  address_prefix      = var.address_prefix
+  next_hop_type       = var.next_hop_type
+  next_hop_ip         = var.next_hop_ip
+  location            = var.location
+  resource_group_name = module.rg.resource_group_name
+  aks_subnet_id       = var.aks_subnet_id
+  tags                = var.tags
 }

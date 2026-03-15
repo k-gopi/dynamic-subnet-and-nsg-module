@@ -76,31 +76,41 @@ resource "azurerm_kubernetes_cluster" "aks" {
     auto_scaling_enabled = true
     min_count            = var.system_nodepool_min
     max_count            = var.system_nodepool_max
+
+    os_disk_size_gb = var.system_nodepool_os_disk_size_gb
   }
 
   identity {
     type = "SystemAssigned"
   }
 
+  #################################
+  # AKS Networking
+  #################################
+
   network_profile {
     network_plugin    = "azure"
     load_balancer_sku = "standard"
-    service_cidr      = var.service_cidr
-    dns_service_ip    = var.dns_service_ip
+
+    outbound_type = "loadBalancer"  # userDefinedRouting
+
+    service_cidr   = var.service_cidr
+    dns_service_ip = var.dns_service_ip
   }
+
+  #################################
+  # AGIC Integration
+  #################################
 
   ingress_application_gateway {
     gateway_id = azurerm_application_gateway.appgw.id
   }
 
   tags = var.tags
-  timeouts {
-    delete = "5m"
-  }
 }
 
 #################################
-# AKS User Node Pool
+# User Node Pool
 #################################
 
 resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
@@ -113,6 +123,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "userpool" {
   auto_scaling_enabled = true
   min_count            = var.user_nodepool_min
   max_count            = var.user_nodepool_max
+
+  os_disk_size_gb = var.user_nodepool_os_disk_size_gb
 
   mode                   = "User"
   node_public_ip_enabled = false

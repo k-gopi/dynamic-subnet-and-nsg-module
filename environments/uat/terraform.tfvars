@@ -180,22 +180,26 @@ private_endpoints = {
 # =============================
 # AKS
 # =============================
-aks_cluster_name = "uat-aks"
+aks_cluster_name = "uat-aks-new"
 dns_prefix       = "uataks"
 
 system_nodepool_name    = "systemnp"
-system_nodepool_vm_size = "Standard_D4s_v3"
+
 system_nodepool_min     = 1
 system_nodepool_max     = 3
 
 user_nodepool_name    = "usernp"
-user_nodepool_vm_size = "Standard_D2s_v3"
+
 user_nodepool_min     = 1
 user_nodepool_max     = 2
 
 service_cidr   = "172.16.0.0/16"
 dns_service_ip = "172.16.0.10"
+system_nodepool_vm_size = "Standard_D2s_v3"
+user_nodepool_vm_size   = "Standard_D4s_v3"
 
+system_nodepool_os_disk_size_gb = 64
+user_nodepool_os_disk_size_gb   = 64
 # =============================
 # Application Gateway
 # =============================
@@ -205,3 +209,15 @@ appgw_sku_tier      = "Standard_v2"
 appgw_capacity      = 2
 appgw_frontend_port = 80
 appgw_private_ip    = "10.0.2.10"
+
+# =============================
+# routetable
+# =============================
+
+
+route_table_name      = "uat-aks-route-table"
+route_name            = "default-egress"
+address_prefix        = "0.0.0.0/0"
+next_hop_type         = "Internet"  # VirtualAppliance
+next_hop_ip           = ""       # OnPrem firewall/NVA
+aks_subnet_id = "/subscriptions/27339cb4-7869-4ef0-b766-ee6720081396/resourceGroups/my-custom-rg/providers/Microsoft.Network/virtualNetworks/fis-uat-vnet/subnets/aks-subnet-subnet"
