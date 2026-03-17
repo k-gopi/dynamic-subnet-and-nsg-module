@@ -3,7 +3,7 @@
 ################################################
 module "rg" {
   source   = "../../modules/resource_group"
-  name     = var.custom_rg_name  # <-- your custom name here
+  name     = var.custom_rg_name # <-- your custom name here
   location = var.location
   tags     = var.tags
 }
@@ -41,13 +41,13 @@ module "subnets" {
 module "monitoring" {
   source = "../../modules/monitoring"
 
-  log_analytics_workspace_name     = var.log_analytics_workspace_name
-  log_analytics_sku                = var.log_analytics_sku
-  log_analytics_retention_in_days  = var.log_analytics_retention_in_days
+  log_analytics_workspace_name    = var.log_analytics_workspace_name
+  log_analytics_sku               = var.log_analytics_sku
+  log_analytics_retention_in_days = var.log_analytics_retention_in_days
 
-  application_insights_name        = var.application_insights_name
-  application_type                 = var.application_type
-  appinsights_retention_in_days    = var.appinsights_retention_in_days
+  application_insights_name     = var.application_insights_name
+  application_type              = var.application_type
+  appinsights_retention_in_days = var.appinsights_retention_in_days
 
   location            = var.location
   resource_group_name = module.rg.resource_group_name
@@ -57,19 +57,27 @@ module "monitoring" {
 ################################################
 # Storage
 ################################################
+#################################
+# Storage Account Module
+#################################
 module "storage" {
   source = "../../modules/storage"
 
   storage_account_name            = var.storage_account_name
-  container_name                  = var.container_name
   resource_group_name             = module.rg.resource_group_name
   location                        = var.location
   account_tier                    = var.account_tier
+  account_kind                    = var.account_kind
   account_replication_type        = var.account_replication_type
+  access_tier                     = var.access_tier
+  min_tls_version                 = var.min_tls_version
+  hns_enabled                     = var.hns_enabled
+  sftp_enabled                    = var.sftp_enabled
   delete_retention_days           = var.delete_retention_days
   container_delete_retention_days = var.container_delete_retention_days
-
-  tags = var.tags
+  container_name                  = var.container_name
+  tags                            = var.tags
+  #estimated_capacity_gb          = var.estimated_capacity_gb
 }
 
 ################################################
@@ -83,7 +91,7 @@ module "sql_server" {
   sql_admin_password  = var.sql_admin_password
   database_name       = var.database_name
   location            = var.location
-  sku_name            = var.sku_name
+  sql_sku_name        = var.sql_sku_name # ✅ assign env value
   sql_version         = var.sql_version
   tags                = var.tags
 }
@@ -99,7 +107,7 @@ module "nsg" {
   resource_group_name = module.rg.resource_group_name
   tags                = var.tags
   subnet_ids          = module.subnets.subnet_ids
-  nsg_ids    = module.nsg.nsg_ids
+  nsg_ids             = module.nsg.nsg_ids
 }
 
 ################################################
@@ -157,19 +165,19 @@ module "aks_module" {
   appgw_frontend_port = var.appgw_frontend_port
   appgw_private_ip    = var.appgw_private_ip
 
-  aks_cluster_name             = var.aks_cluster_name
-  dns_prefix                   = var.dns_prefix
+  aks_cluster_name = var.aks_cluster_name
+  dns_prefix       = var.dns_prefix
 
-  system_nodepool_name         = var.system_nodepool_name
-  system_nodepool_vm_size      = var.system_nodepool_vm_size
-  system_nodepool_min          = var.system_nodepool_min
-  system_nodepool_max          = var.system_nodepool_max
+  system_nodepool_name            = var.system_nodepool_name
+  system_nodepool_vm_size         = var.system_nodepool_vm_size
+  system_nodepool_min             = var.system_nodepool_min
+  system_nodepool_max             = var.system_nodepool_max
   system_nodepool_os_disk_size_gb = var.system_nodepool_os_disk_size_gb
 
-  user_nodepool_name           = var.user_nodepool_name
-  user_nodepool_vm_size        = var.user_nodepool_vm_size
-  user_nodepool_min            = var.user_nodepool_min
-  user_nodepool_max            = var.user_nodepool_max
+  user_nodepool_name            = var.user_nodepool_name
+  user_nodepool_vm_size         = var.user_nodepool_vm_size
+  user_nodepool_min             = var.user_nodepool_min
+  user_nodepool_max             = var.user_nodepool_max
   user_nodepool_os_disk_size_gb = var.user_nodepool_os_disk_size_gb
 
   service_cidr   = var.service_cidr
@@ -188,13 +196,51 @@ module "aks_module" {
 module "route_table" {
   source = "../../modules/route_table"
 
-  route_table_name    = var.route_table_name
-  route_name          = var.route_name
-  address_prefix      = var.address_prefix
-  next_hop_type       = var.next_hop_type
-  next_hop_ip         = var.next_hop_ip
+  route_table_name = var.route_table_name
+  route_name       = var.route_name
+  address_prefix   = var.address_prefix
+  next_hop_type    = var.next_hop_type
+
+  next_hop_ip = module.firewall.firewall_private_ip # 🔥 dynamic
+
   location            = var.location
   resource_group_name = module.rg.resource_group_name
-  aks_subnet_id       = var.aks_subnet_id
+  aks_subnet_id       = module.subnets.subnet_ids["aks-subnet"]
+
+  db_subnet_cidr      = var.db_subnet_cidr
+  #storage_subnet_cidr = var.storage_subnet_cidr
+
+  tags = var.tags
+}
+/*
+################################################
+# apim
+################################################
+
+module "apim" {
+  source              = "../../modules/apim"
+  apim_name           = var.apim_name
+  publisher_name      = var.publisher_name
+  publisher_email     = var.publisher_email
+  apim_sku_name       = var.apim_sku_name       # pass SKU to module
+  #apim_capacity       = var.apim_capacity       # pass capacity to module
+  location            = var.location
+  resource_group_name = module.rg.resource_group_name
+  tags                = var.tags
+  virtual_network_type= var.virtual_network_type
+}
+*/
+#################################
+# Azure Firewall
+#################################
+
+module "firewall" {
+  source = "../../modules/firewall"
+
+  firewall_name       = var.firewall_name
+  location            = var.location
+  resource_group_name = module.rg.resource_group_name
+  firewall_subnet_id  = module.subnets.subnet_ids["AzureFirewallSubnet"]
+  aks_subnet_cidr     = var.aks_subnet_cidr
   tags                = var.tags
 }

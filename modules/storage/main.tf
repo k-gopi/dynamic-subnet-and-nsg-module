@@ -1,13 +1,21 @@
+#################################
+# Storage Account
+#################################
+
 resource "azurerm_storage_account" "storage" {
   name                     = var.storage_account_name
   resource_group_name      = var.resource_group_name
   location                 = var.location
-  account_tier             = var.account_tier
-  account_replication_type = var.account_replication_type
 
-  min_tls_version                 = "TLS1_2"
-  public_network_access_enabled   = false
-  allow_nested_items_to_be_public = false
+  account_tier             = var.account_tier           # Standard / Premium
+  account_kind             = var.account_kind           # StorageV2
+  account_replication_type = var.account_replication_type  # ZRS / LRS / GRS
+  access_tier              = var.access_tier           # Hot / Cool
+
+  min_tls_version           = var.min_tls_version
+  #enable_https_traffic_only = true
+  is_hns_enabled            = var.hns_enabled          # Flat namespace for Blob Storage
+  sftp_enabled              = var.sftp_enabled
 
   blob_properties {
     versioning_enabled = true
@@ -23,6 +31,10 @@ resource "azurerm_storage_account" "storage" {
 
   tags = var.tags
 }
+
+#################################
+# Storage Container
+#################################
 
 resource "azurerm_storage_container" "container" {
   name                  = var.container_name

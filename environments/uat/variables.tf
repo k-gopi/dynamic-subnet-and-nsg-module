@@ -98,28 +98,63 @@ variable "appinsights_retention_in_days" {
 # Storage
 # -----------------------------
 variable "storage_account_name" {
-  type = string
-}
-
-variable "container_name" {
-  type = string
+  description = "Storage account name"
+  type        = string
 }
 
 variable "account_tier" {
-  type = string
+  description = "Standard or Premium"
+  type        = string
+}
+
+variable "account_kind" {
+  description = "Storage account kind (StorageV2)"
+  type        = string
 }
 
 variable "account_replication_type" {
-  type = string
+  description = "Replication type (ZRS / LRS / GRS)"
+  type        = string
+}
+
+variable "access_tier" {
+  description = "Hot or Cool access tier"
+  type        = string
+}
+
+variable "min_tls_version" {
+  description = "Minimum TLS version"
+  type        = string
+}
+
+variable "hns_enabled" {
+  description = "Enable flat namespace"
+  type        = bool
+}
+
+variable "sftp_enabled" {
+  description = "Enable SFTP"
+  type        = bool
 }
 
 variable "delete_retention_days" {
-  type = number
+  description = "Number of days to retain deleted blobs"
+  type        = number
 }
 
 variable "container_delete_retention_days" {
-  type = number
+  description = "Number of days to retain deleted containers"
+  type        = number
 }
+variable "container_name" {
+  description = "Blob container name"
+  type        = string
+}
+
+#variable "estimated_capacity_gb" {
+# description = "Estimated GB usage for cost tracking"
+# type        = number
+#}
 
 # -----------------------------
 # SQL
@@ -142,9 +177,9 @@ variable "database_name" {
   type = string
 }
 
-variable "sku_name" {
-  type    = string
-  default = "Basic"
+variable "sql_sku_name" {
+  type        = string
+  description = "SQL Database edition from environment"
 }
 
 variable "sql_version" {
@@ -263,53 +298,54 @@ variable "dns_service_ip" {
 # routetable
 # -----------------------------
 
-variable "route_table_name" {
-  description = "Name of the AKS Route Table"
+variable "route_table_name" {}
+variable "route_name" {}
+variable "address_prefix" {}
+variable "next_hop_type" {}
+
+variable "db_subnet_cidr" {}
+#variable "storage_subnet_cidr" {}
+
+
+
+
+/*
+################################################
+# apim
+################################################
+
+variable "apim_name" {
+  type        = string
+  description = "APIM service name"
+}
+
+variable "publisher_name" {
   type        = string
 }
 
-variable "route_name" {
-  description = "Route name inside the route table"
+variable "publisher_email" {
   type        = string
 }
 
-variable "address_prefix" {
-  description = "Destination address prefix for the route"
+variable "apim_sku_name" {
   type        = string
 }
 
-variable "next_hop_type" {
-  description = "Next hop type (VirtualAppliance, Internet, VnetLocal, None)"
-  type        = string
-}
-
-variable "next_hop_ip" {
-  description = <<EOT
-IP of OnPrem firewall or NVA.
-Only required if next_hop_type is 'VirtualAppliance'.
-Leave empty if not using a VirtualAppliance.
-EOT
-  type    = string
-  default = ""
-}
-
-#variable "location" {
- # description = "Azure region where the route table will be created"
-  #type        = string
+#variable "apim_capacity" {
+ # type        = number
 #}
 
-#variable "resource_group_name" {
- # description = "Resource group where the route table will be created"
-  #type        = string
-#}
 
-variable "aks_subnet_id" {
-  description = "Subnet ID to associate with the route table"
+variable "virtual_network_type" {
   type        = string
+  default     = "None"
 }
+*/
+#################################
+# Firewall
+#################################
 
-##variable "tags" {
-  #description = "Tags to apply to the route table"
-  #type        = map(string)
-  #default     = {}
-#}
+variable "firewall_name" {}
+variable "firewall_subnet_id" {}
+variable "aks_subnet_cidr" {}
+

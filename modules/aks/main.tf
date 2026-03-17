@@ -92,7 +92,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     network_plugin    = "azure"
     load_balancer_sku = "standard"
 
-    outbound_type = "loadBalancer"  # userDefinedRouting
+    outbound_type = "userDefinedRouting"  #loadBalancer, userDefinedRouting, managedNATGateway, userAssignedNATGateway,none
 
     service_cidr   = var.service_cidr
     dns_service_ip = var.dns_service_ip

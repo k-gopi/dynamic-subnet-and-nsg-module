@@ -1,10 +1,10 @@
 # =============================
 # Environment / RG variables
 # =============================
-custom_rg_name = "my-custom-rg"
-project     = "fis"
-environment = "uat"
-location    = "centralindia"
+custom_rg_name = "my-custom-newrg"
+project        = "fis"
+environment    = "uat"
+location       = "centralindia"
 
 tags = {
   Project     = "fis"
@@ -25,10 +25,10 @@ dns_servers        = []
 # Subnets
 # =============================
 subnets = {
-  aks-subnet        = { cidr = "10.0.1.0/24" }
-  appgw-subnet      = { cidr = "10.0.2.0/24" }
-  private_endpoint  = { cidr = "10.0.3.0/24" }
-  db_endpoint       = { cidr = "10.0.4.0/24" }
+  aks-subnet          = { cidr = "10.0.1.0/24" }
+  appgw-subnet        = { cidr = "10.0.2.0/24" }
+  private_endpoint    = { cidr = "10.0.3.0/24" }
+  AzureFirewallSubnet = { cidr = "10.0.4.0/24" }
 }
 
 # =============================
@@ -137,19 +137,25 @@ log_analytics_workspace_name    = "uat-law"
 log_analytics_sku               = "PerGB2018"
 log_analytics_retention_in_days = 30
 
-application_insights_name       = "uat-appinsights"
-application_type                = "web"
-appinsights_retention_in_days   = 30
+application_insights_name     = "uat-appinsights"
+application_type              = "web"
+appinsights_retention_in_days = 30
 
 # =============================
 # Storage
 # =============================
-storage_account_name            = "uatstorage123"
-container_name                  = "appdata"
+storage_account_name            = "uatstorageacct01"
 account_tier                    = "Standard"
-account_replication_type        = "LRS"
+account_kind                    = "StorageV2"
+account_replication_type        = "ZRS"
+access_tier                     = "Hot"
+min_tls_version                 = "TLS1_2"
+hns_enabled                     = false
+sftp_enabled                    = false
 delete_retention_days           = 7
 container_delete_retention_days = 7
+container_name                  = "appdata"
+
 
 # =============================
 # SQL
@@ -158,7 +164,7 @@ sql_server_name    = "fis-uat-sqlserver"
 sql_admin_username = "sqladminuser"
 sql_admin_password = "StrongPassword123!"
 database_name      = "fis_uat_db"
-sku_name           = "Basic"
+sql_sku_name       = "Basic" # ✅ Replace edition with sql_sku_name
 sql_version        = "12.0"
 
 # =============================
@@ -180,21 +186,21 @@ private_endpoints = {
 # =============================
 # AKS
 # =============================
-aks_cluster_name = "uat-aks-new"
+aks_cluster_name = "uat-aks"
 dns_prefix       = "uataks"
 
-system_nodepool_name    = "systemnp"
+system_nodepool_name = "systemnp"
 
-system_nodepool_min     = 1
-system_nodepool_max     = 3
+system_nodepool_min = 1
+system_nodepool_max = 3
 
-user_nodepool_name    = "usernp"
+user_nodepool_name = "usernp"
 
-user_nodepool_min     = 1
-user_nodepool_max     = 2
+user_nodepool_min = 1
+user_nodepool_max = 2
 
-service_cidr   = "172.16.0.0/16"
-dns_service_ip = "172.16.0.10"
+service_cidr            = "172.16.0.0/16"
+dns_service_ip          = "172.16.0.10"
 system_nodepool_vm_size = "Standard_D2s_v3"
 user_nodepool_vm_size   = "Standard_D4s_v3"
 
@@ -214,10 +220,34 @@ appgw_private_ip    = "10.0.2.10"
 # routetable
 # =============================
 
+route_table_name = "uat-aks-route-table"
+route_name       = "default-egress"
 
-route_table_name      = "uat-aks-route-table"
-route_name            = "default-egress"
-address_prefix        = "0.0.0.0/0"
-next_hop_type         = "Internet"  # VirtualAppliance
-next_hop_ip           = ""       # OnPrem firewall/NVA
-aks_subnet_id = "/subscriptions/27339cb4-7869-4ef0-b766-ee6720081396/resourceGroups/my-custom-rg/providers/Microsoft.Network/virtualNetworks/fis-uat-vnet/subnets/aks-subnet-subnet"
+address_prefix = "0.0.0.0/0"
+#next_hop_type = "Internet"
+next_hop_type  = "VirtualAppliance"
+
+# Private endpoint subnets
+db_subnet_cidr      = "10.0.3.0/24"
+#storage_subnet_cidr = "10.0.3.0/24"
+
+/*################################################
+# apim
+################################################
+
+apim_name           = "uat-apim-service"
+publisher_name      = "Gopi Kola"
+publisher_email     = "gopi@example.com"
+
+#apim_capacity       = 2
+apim_sku_name        = "Standard_1"
+virtual_network_type = "None"
+*/
+#################################
+# Firewall
+#################################
+
+firewall_name = "uat-aks-firewall"
+
+firewall_subnet_id = "/subscriptions/27339cb4-7869-4ef0-b766-ee6720081396/resourceGroups/my-custom-rg/providers/Microsoft.Network/virtualNetworks/fis-uat-vnet/subnets/AzureFirewallSubnet"
+aks_subnet_cidr    = "10.0.1.0/24"

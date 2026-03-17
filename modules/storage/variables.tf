@@ -1,48 +1,77 @@
 variable "storage_account_name" {
-  description = "Storage Account Name"
-  type        = string
-}
-
-variable "container_name" {
-  description = "Blob Container Name"
+  description = "Storage account name"
   type        = string
 }
 
 variable "resource_group_name" {
-  description = "Resource Group Name"
+  description = "Resource group name"
   type        = string
 }
 
 variable "location" {
-  description = "Azure Region"
+  description = "Azure region"
   type        = string
 }
 
 variable "account_tier" {
-  description = "Storage Account Tier (Standard / Premium)"
+  description = "Standard or Premium"
   type        = string
-  default     = "Standard"
+}
+
+variable "account_kind" {
+  description = "Storage account kind, usually StorageV2"
+  type        = string
 }
 
 variable "account_replication_type" {
-  description = "Storage Account Replication Type (LRS / GRS / ZRS / RAGRS)"
+  description = "LRS, ZRS, GRS etc."
   type        = string
-  default     = "LRS"
+}
+
+variable "access_tier" {
+  description = "Hot or Cool"
+  type        = string
+}
+
+variable "min_tls_version" {
+  description = "Minimum TLS version"
+  type        = string
+}
+
+variable "hns_enabled" {
+  description = "Hierarchical namespace (Flat namespace for Blob Storage)"
+  type        = bool
+}
+
+variable "sftp_enabled" {
+  description = "Enable SFTP (true/false)"
+  type        = bool
 }
 
 variable "delete_retention_days" {
-  description = "Blob delete retention policy in days"
+  description = "Number of days to retain deleted blobs"
   type        = number
-  default     = 7
 }
 
 variable "container_delete_retention_days" {
-  description = "Container delete retention policy in days"
+  description = "Number of days to retain deleted containers"
   type        = number
-  default     = 7
+}
+
+variable "container_name" {
+  description = "Blob container name"
+  type        = string
 }
 
 variable "tags" {
-  description = "Tags applied to resources"
+  description = "Tags map"
   type        = map(string)
+  default     = {}
 }
+
+/*variable "estimated_capacity_gb" {
+  description = "Estimated storage usage in GB for cost calculation"
+  type        = number
+  default     = 500
+}
+*/
